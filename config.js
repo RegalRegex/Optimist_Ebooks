@@ -5,4 +5,3 @@ module.exports = {
   access_token: '892474138002063360-RLE7CHBWYPSnsMjyAFLpmtzNhaf0gJ7',  
   access_token_secret: 'IKipBzKHpPtjVyZ1OPWFPSugLSPWcBp9THKUT5uNBsx6x'
 }
-//test
