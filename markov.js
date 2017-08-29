@@ -11,7 +11,7 @@ const options = {
  minWords: 10,
  minScore: 25,
  checker: sentence => {
-   return sentence.endsWith('.'); // I want my tweets to end with a dot. 
+   return sentence.endsWith(''); // I want my tweets to end with a dot. 
  }
 };
 
@@ -31,6 +31,7 @@ markov.buildCorpus()
          tweets.push(result);
        });
    }
+   return tweets;
 
    // Generate a shorter tweet to add a link 
   
