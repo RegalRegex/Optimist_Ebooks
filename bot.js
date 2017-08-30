@@ -1,91 +1,138 @@
 //bot.js
 var twit = require('twit');
 var config = require('./config.js');
-var markovRequire = require('./markov.js');
+//var markovRequire = require('./markov.js');
 var T = new twit(config);
-/**
- * STEPS:
- * 
- * 1. Get tweet from accounts
- * 2. Remove RT crud
- * 3. Randomize with Markov
- * 4. Post new tweet
- * 5. Interval
- */
 
+const Markov = require('markov-strings');
 
-markovIt();
-tweetIt();
-setInterval(tweetIt, 1000 * 60 * 5)
-setInterval(markovIt, 1000 * 60 * 60 * 24)
+// 2) More complete way with options and Promises 
 
-function markovIt() {
-  var tweet;
-  var source_tweets = [];
+const data = [];
 
-  /* REGULAR EXPRESSIONS HERE */
+var source_tweets = [];
 
-  // str.replace(regexp|substr, newSubstr|function)
-  function filterTweet(tweet) {
-    tweet = tweet.replace('\b(RT|MT) .+', ''); //Take out anything after RT or MT
-    tweet = tweet.replace('(\#|@|(h\/t)|(http))\S+', '') //Take out URLs, hashtags, hts, etc.
-    tweet = tweet.replace('\n', '') //take out new lines.
-    tweet = tweet.replace('\"|\(|\)', '') //take out quotes.
-    tweet = tweet.replace('\s+\(?(via|says)\s@\w+\)?', '') // remove attribution
-    
-    //I don't know what this is \/
-    htmlsents = tweet.exec('&/w+;')
-    if (length(htmlsents) > 0){
-      for (itme in htmlsents) {
-        tweet = tweet.replace(item, tweet)
-      }
-    }
-    tweet = tweet.replace('\xe9', 'e');
-    return tweet;
+// Some options to generate Twitter-ready strings 
+const options = {
+  maxLength: 140,
+  minWords: 10,
+  minScore: 25,
+  checker: sentence => {
+    return sentence.endsWith(''); // I want my tweets to end with a dot. 
   }
+};
 
-  function getTweets(T) {
-    //Collating source tweets and putting into Markov class' data array
+// Instantiate the generator 
+const markov = new Markov(data, options);
 
-    var params = {
-      screen_name: config.user,
-      count: 200,
-      //max_id: max_id, 
-      include_rts: True,
-      trim_user: True,
-      exclude_replies: True
-    };
-    // string array user_tweets
-    var source_tweets = [];
-    user_tweets = T.get('statuses/user_timeline', params, function (err, data, response) {
-      console.log(data)
-    })
-    for (tweet in user_tweets) {
-      tweet = filterTweet(tweet);
-    }
-    if (length(tweet) != 0) {
-      source_tweets.push(tweet);
-    }
-    return source_tweets;
+getTweets(T);
+//tweetIt();
+//setInterval(tweetIt, 1000 * 60 * 5)
+setInterval(getTweets, 1000 * 60 * 60 * 24)
+
+var tweet;
+var user_tweets = [];
+
+/* REGULAR EXPRESSIONS HERE */
+var re1 = /\b(RT|MT) .+/; // RTs
+var re2 = /(^|\s)(#[a-z\d-]+)/; // Hashtags
+var re3 = /\n/; // Extra lines
+var re4 = /\"|\(|\)/; // Attribution
+var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi
+
+var regexes = [re1, re2, re3, re4, re5];
+// str.replace(regexp|substr, newSubstr|function)
+function filterTweet() { // filters tweets with regex
+  var tweetNew;
+  for (let i = 0; i < regexes.length; i++) {
+    tweetNew = tweet.replace(regexes[i], '');
+    tweet = tweetNew;
   }
+  return tweet;
 
-  data = source_tweets;
 }
 
-function tweetIt(tweets) {
- // markovRequire.markov.buildCorpus()
-  //.then(tweets => {
-    var e_tweet = tweets.splice(Math.floor(Math.random()*array.length), 1);
-  //})
-  T.post('statuses/update', e_tweet, tweeted)
-  
-    function tweeted(err, data, response) {
-      if (err) {
-        console.log("Something went wrong!");
-      } else {
-        console.log(data);
+function getTweets(T) { // collects tweets and edits
+
+  var params = {
+    screen_name: config.user,
+    count: 50,
+    //max_id: max_id, 
+    include_rts: false,
+    trim_user: true,
+    exclude_replies: true
+  };
+  // string array user_tweets
+  T.get('statuses/user_timeline', params, editTweets);
+  function editTweets(err, data, response) {
+    var tweets = data;
+    for (var i = 0; i < tweets.length; i++) {
+      //console.log(tweets[i].text);
+      tweet = tweets[i].text;
+      tweet = filterTweet(tweet);
+
+      if (tweet.length != 0) {
+        source_tweets.push(tweet);
       }
-  
     }
+    //console.log(source_tweets);
+    return source_tweets; // ARRAY
+    console.log(source_tweets[0]);
   }
+  fillData(source_tweets);
+  console.log(source_tweets[0]);
+}
+
+function fillData(source_tweets){
+  data.push.apply(data, source_tweets);
+  console.log(data);
+  return data;
+}
+
+// data.push(source_tweets)
+
+function tweetIt() {
+
+  // Build the corpus
+  markov.buildCorpus()
+    .then(() => {
+
+      // Generate some tweets
+      var markovTweets = [];
+      for (let i = 0; i < 10; i++) {
+        markov.generateSentence()
+          .then(result => {
+            markovTweets.push(result);
+            console.log(markovTweets);
+          });
+        }
+    //  console.log(markovTweets);
+    // return markovTweets;
+    })
+    /*.then((markovTweets) => {
+      var e_tweet;
+      e_tweet = markovTweets.pop();
+      console.log(e_tweet);
+      return e_tweet;
+    });*/
+
+  /*
+  e_tweet = { status: source_tweets.pop() };
+  T.post('statuses/update', e_tweet, tweeted)
+ 
+  function tweeted(err, data, response) {
+    if (err) {
+      console.log("Something went wrong!");
+    } else {
+      console.log(data);
+    }
+ 
+  }*/
+}
+
+
+
+
+
+
 

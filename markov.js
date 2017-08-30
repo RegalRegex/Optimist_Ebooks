@@ -30,27 +30,6 @@ markov.buildCorpus()
        .then(result => {
          tweets.push(result);
        });
+       return tweets;
    }
-   return tweets;
-
-   // Generate a shorter tweet to add a link 
-  
-   // I don't think I need this stuff??
-   /*
-   markov.generateSentence({
-       maxLength: 140 - 24
-     })
-     .then(shorterTweet => {
-       shorterTweet.string += ' https://github.com/scambier/markov-strings'; // Links always take 23 characters in a tweet 
-
-       console.log(shorterTweet);
-       /*
-       {
-         string: 'lorem ipsum dolor sit amet etc. https://github.com/scambier/markov-strings',
-         score: 42,
-         scorePerWord: 7,
-         refs: [ an array of objects ]
-       }
-       
-     })*/
  });
