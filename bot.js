@@ -1,33 +1,26 @@
 //bot.js
 var twit = require('twit');
 var config = require('./config.js');
+const Markov = require('markov-strings');
 //var markovRequire = require('./markov.js');
 var T = new twit(config);
-
-const Markov = require('markov-strings');
-
-// 2) More complete way with options and Promises 
-
-const data = [];
-
 var source_tweets = [];
-
-// Some options to generate Twitter-ready strings 
+const data = [];
 const options = {
   maxLength: 140,
   minWords: 10,
   minScore: 25,
   checker: sentence => {
-    return sentence.endsWith(''); // I want my tweets to end with a dot. 
+    return sentence.endsWith(''); // I want my tweets to end with a dot.
   }
 };
-
-// Instantiate the generator 
 const markov = new Markov(data, options);
+// Instantiate the generator 
+//const markov = new Markov(data, options);
 
 getTweets(T);
-//tweetIt();
-//setInterval(tweetIt, 1000 * 60 * 5)
+tweetIt(data);
+setInterval(tweetIt, 1000 * 60 * 5)
 setInterval(getTweets, 1000 * 60 * 60 * 24)
 
 var tweet;
@@ -56,7 +49,7 @@ function getTweets(T) { // collects tweets and edits
 
   var params = {
     screen_name: config.user,
-    count: 50,
+    count: 5,
     //max_id: max_id, 
     include_rts: false,
     trim_user: true,
@@ -75,24 +68,45 @@ function getTweets(T) { // collects tweets and edits
         source_tweets.push(tweet);
       }
     }
-    //console.log(source_tweets);
-    return source_tweets; // ARRAY
-    console.log(source_tweets[0]);
+    
+    console.log(source_tweets[0]); // so this one works
+    fillData(source_tweets);
+    //return source_tweets;
   }
-  fillData(source_tweets);
-  console.log(source_tweets[0]);
+ // source_tweets = source_tweets;
+  //console.log(source_tweets[0]); // UNDEFINED
+  //fillData(source_tweets);
+  
 }
 
 function fillData(source_tweets){
+  //console.log(source_tweets[0]);
   data.push.apply(data, source_tweets);
-  console.log(data);
+  //console.log(data);
+  
   return data;
+}
+
+function tweetIt() {
+  // Build the corpus
+  markov.buildCorpus()
+    .then(() => {
+
+      // Generate some tweets
+      const tweets = [];
+      for (let i = 0; i < 10; i++) {
+        markov.generateSentence(data)
+          .then(result => {
+            tweets.push(result);
+          });
+      }
+      console.log(tweets);
+    })
 }
 
 // data.push(source_tweets)
 
-function tweetIt() {
-
+/*function tweetIt(markov) {
   // Build the corpus
   markov.buildCorpus()
     .then(() => {
@@ -109,7 +123,7 @@ function tweetIt() {
     //  console.log(markovTweets);
     // return markovTweets;
     })
-    /*.then((markovTweets) => {
+    .then((markovTweets) => {
       var e_tweet;
       e_tweet = markovTweets.pop();
       console.log(e_tweet);
@@ -127,8 +141,8 @@ function tweetIt() {
       console.log(data);
     }
  
-  }*/
-}
+  }
+}*/
 
 
 
