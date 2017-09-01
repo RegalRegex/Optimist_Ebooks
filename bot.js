@@ -14,14 +14,15 @@ const options = {
     return sentence.endsWith(''); // I want my tweets to end with a dot.
   }
 };
-const markov = new Markov(data, options);
+
 // Instantiate the generator 
 //const markov = new Markov(data, options);
 
-getTweets(T);
-tweetIt(data);
-setInterval(tweetIt, 1000 * 60 * 5)
-setInterval(getTweets, 1000 * 60 * 60 * 24)
+getTweets(T).then(tweetIt);
+//tweetIt(data);
+//setInterval(tweetIt, 1000 * 60 * 5)
+//setInterval(getTweets, 1000 * 60 * 60 * 24)
+
 
 var tweet;
 var user_tweets = [];
@@ -33,46 +34,57 @@ var re3 = /\n/; // Extra lines
 var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi
 
-var regexes = [re1, re2, re3, re4, re5];
+var regexes = [/*re1, re2, re3, re4, re5*/];
 // str.replace(regexp|substr, newSubstr|function)
-function filterTweet() { // filters tweets with regex
+function filterTweet(rawTweet) { // filters tweets with regex
+  var tmp;
   var tweetNew;
   for (let i = 0; i < regexes.length; i++) {
-    tweetNew = tweet.replace(regexes[i], '');
-    tweet = tweetNew;
+    tmp = rawTweet.replace(regexes[i], '');
+    tweetNew = tmp;
   }
-  return tweet;
-
+  return tweetNew;
 }
 
 function getTweets(T) { // collects tweets and edits
 
   var params = {
     screen_name: config.user,
-    count: 5,
+    count: 3000,
     //max_id: max_id, 
     include_rts: false,
     trim_user: true,
     exclude_replies: true
   };
   // string array user_tweets
-  T.get('statuses/user_timeline', params, editTweets);
-  function editTweets(err, data, response) {
-    var tweets = data;
+  return T.get('statuses/user_timeline', params)
+  .then(result => {
+    const tweets = result.data;
     for (var i = 0; i < tweets.length; i++) {
+      const filteredTweet = filterTweet(tweets[i].text);
+      if (filteredTweet.length != 0){
+        source_tweets.push(filteredTweet);
+      }
+    }
+    // return undefined (because promises)
+  });
+  
+  /*function editTweets(err, data, response) {
+    console.log('printing out data.length');
+    console.log(data);
+    for (var i = 0; i < data.length; i++) {
       //console.log(tweets[i].text);
-      tweet = tweets[i].text;
-      tweet = filterTweet(tweet);
+      const filteredTweet = filterTweet(data[i].text)
 
-      if (tweet.length != 0) {
-        source_tweets.push(tweet);
+      if (filteredTweet.length != 0) {
+        source_tweets.push(filteredTweet);
       }
     }
     
     console.log(source_tweets[0]); // so this one works
-    fillData(source_tweets);
-    //return source_tweets;
-  }
+    // fillData(source_tweets);
+    // return source_tweets;
+  }*/
  // source_tweets = source_tweets;
   //console.log(source_tweets[0]); // UNDEFINED
   //fillData(source_tweets);
@@ -88,21 +100,49 @@ function fillData(source_tweets){
 }
 
 function tweetIt() {
+  fillData(source_tweets);
+  const markov = new Markov(data, options);
+  console.log('The length of the source:', source_tweets.length);
+  //console.log(source_tweets);
   // Build the corpus
+  console.log(source_tweets[0]);
   markov.buildCorpus()
     .then(() => {
 
       // Generate some tweets
       const tweets = [];
       for (let i = 0; i < 10; i++) {
-        markov.generateSentence(data)
-          .then(result => {
-            tweets.push(result);
-          });
+        tweets.push(markov.generateSentence());
+          // .then(result => {
+          //   tweets.push(result);
+          // });
       }
-      console.log(tweets);
+      Promise.all(tweets)
+      .then(results => {
+        function postTweets(T) {
+        T.post('statuses/update', response.body, tweeted)
+        
+         function tweeted(err, data, response) {
+           if (err) {
+             console.log("Something went wrong!");
+           } else {
+             console.log(data);
+           }
+        
+         }
+      };
+      });
+
+      // Promise.all(arrayOfPromises)
+      // .then(arrayOfValues => {
+      //   console.log(arrayOfValues)
+      // });
+      // console.log(tweets);
     })
 }
+
+
+
 
 // data.push(source_tweets)
 
