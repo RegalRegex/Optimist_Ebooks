@@ -4,7 +4,6 @@ var config = require('./config.js');
 const Markov = require('markov-strings');
 //var markovRequire = require('./markov.js');
 var T = new twit(config);
-var source_tweets = [];
 const data = [];
 const options = {
   maxLength: 140,
@@ -34,7 +33,7 @@ var re3 = /\n/; // Extra lines
 var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi
 
-var regexes = [/*re1, re2, re3, re4, re5*/];
+var regexes = [re1, re2, re3, re4, re5];
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
   var tmp;
@@ -46,66 +45,51 @@ function filterTweet(rawTweet) { // filters tweets with regex
   return tweetNew;
 }
 
-function getTweets(T) { // collects tweets and edits
-
-  var params = {
-    screen_name: config.user,
-    count: 3000,
-    //max_id: max_id, 
-    include_rts: false,
-    trim_user: true,
-    exclude_replies: true
-  };
-  // string array user_tweets
-  return T.get('statuses/user_timeline', params)
-  .then(result => {
-    const tweets = result.data;
-    for (var i = 0; i < tweets.length; i++) {
-      const filteredTweet = filterTweet(tweets[i].text);
-      if (filteredTweet.length != 0){
-        source_tweets.push(filteredTweet);
-      }
-    }
-    // return undefined (because promises)
-  });
+async function getTweets(T) { // collects tweets and edits
   
-  /*function editTweets(err, data, response) {
-    console.log('printing out data.length');
-    console.log(data);
-    for (var i = 0; i < data.length; i++) {
-      //console.log(tweets[i].text);
-      const filteredTweet = filterTweet(data[i].text)
-
-      if (filteredTweet.length != 0) {
-        source_tweets.push(filteredTweet);
-      }
-    }
-    
-    console.log(source_tweets[0]); // so this one works
-    // fillData(source_tweets);
-    // return source_tweets;
-  }*/
- // source_tweets = source_tweets;
-  //console.log(source_tweets[0]); // UNDEFINED
-  //fillData(source_tweets);
+    var params = {
+      screen_name: config.user,
+      count: 200,
+      max_id: undefined,
+      include_rts: false,
+      trim_user: true,
+      exclude_replies: true
+    };
   
-}
+    let sourceTweets = [];
+    let freshBatch;
+    let uniqueTweets = [];
+    let result;
+    // while sourceTweets isn't full yet
+    while (sourceTweets.length < 1000) {
+      result = await T.get('statuses/user_timeline', params);
+      freshBatch = result.data;
+      // get oldest ID, and set params.max_id
+      params.max_id = freshBatch[freshBatch.length - 1].id - 1;
+      // filter out duplicate tweets in new batch
+      uniqueTweets = freshBatch.map(tweet => filterTweet(tweet.text))
+          .filter(tweet => tweet.length > 0);
+      // sanitise the new tweets, then append to the buffer
+      sourceTweets = sourceTweets.concat(uniqueTweets);
+    }
+    return sourceTweets;
+  }
 
-function fillData(source_tweets){
-  //console.log(source_tweets[0]);
-  data.push.apply(data, source_tweets);
+function fillData(sourceTweets){
+  //console.log(sourceTweets[0]);
+  data.push.apply(data, sourceTweets);
   //console.log(data);
   
   return data;
 }
 
-function tweetIt() {
-  fillData(source_tweets);
+function tweetIt(sourceTweets) {
+  fillData(sourceTweets);
   const markov = new Markov(data, options);
-  console.log('The length of the source:', source_tweets.length);
-  //console.log(source_tweets);
+  console.log('The length of the source:', sourceTweets.length);
+  //console.log(sourceTweets);
   // Build the corpus
-  console.log(source_tweets[0]);
+  console.log(sourceTweets[0]);
   markov.buildCorpus()
     .then(() => {
 
@@ -118,19 +102,19 @@ function tweetIt() {
           // });
       }
       Promise.all(tweets)
-      .then(results => {
+      .then(results => 
         function postTweets(T) {
-        T.post('statuses/update', response.body, tweeted)
+        T.post('statuses/update', { status: results.pop().string }, tweeted)
         
          function tweeted(err, data, response) {
            if (err) {
              console.log("Something went wrong!");
+             console.log(err);
            } else {
              console.log(data);
            }
         
          }
-      };
       });
 
       // Promise.all(arrayOfPromises)
@@ -138,13 +122,15 @@ function tweetIt() {
       //   console.log(arrayOfValues)
       // });
       // console.log(tweets);
-    })
+    
+});
 }
 
 
 
 
-// data.push(source_tweets)
+
+// data.push(sourceTweets)
 
 /*function tweetIt(markov) {
   // Build the corpus
@@ -171,7 +157,7 @@ function tweetIt() {
     });*/
 
   /*
-  e_tweet = { status: source_tweets.pop() };
+  e_tweet = { status: sourceTweets.pop() };
   T.post('statuses/update', e_tweet, tweeted)
  
   function tweeted(err, data, response) {
