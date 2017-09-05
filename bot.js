@@ -8,7 +8,7 @@ const data = [];
 const options = {
   maxLength: 140,
   minWords: 10,
-  minScore: 25,
+  minScore: 50,
   checker: sentence => {
     return sentence.endsWith(''); // I want my tweets to end with a dot.
   }
@@ -46,40 +46,49 @@ function filterTweet(rawTweet) { // filters tweets with regex
 }
 
 async function getTweets(T) { // collects tweets and edits
-  
-    var params = {
-      screen_name: config.user,
-      count: 200,
-      max_id: undefined,
-      include_rts: false,
-      trim_user: true,
-      exclude_replies: true
-    };
-  
-    let sourceTweets = [];
-    let freshBatch;
-    let uniqueTweets = [];
-    let result;
-    // while sourceTweets isn't full yet
-    while (sourceTweets.length < 1000) {
-      result = await T.get('statuses/user_timeline', params);
-      freshBatch = result.data;
-      // get oldest ID, and set params.max_id
+
+  var params = {
+    screen_name: config.user,
+    count: 200,
+    max_id: undefined,
+    include_rts: false,
+    trim_user: true,
+    exclude_replies: true
+  };
+
+  let sourceTweets = [];
+  let freshBatch;
+  let uniqueTweets = [];
+  let result;
+  // while sourceTweets isn't full yet
+  while (sourceTweets.length < 1000) {
+    result = await T.get('statuses/user_timeline', params);
+    freshBatch = result.data;
+    console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
+    // get oldest ID, and set params.max_id
+    if (freshBatch.length === 0) {
+      console.log("FreshBatch empty. Randomly readjusting");
+      let tempNum = (Math.random() * (10 - 1) + 1)
+      params.max_id = sourceTweets[sourceTweets.length - tempNum];
+      continue;
+    }
+    else {
       params.max_id = freshBatch[freshBatch.length - 1].id - 1;
       // filter out duplicate tweets in new batch
       uniqueTweets = freshBatch.map(tweet => filterTweet(tweet.text))
-          .filter(tweet => tweet.length > 0);
+        .filter(tweet => tweet.length > 0);
       // sanitise the new tweets, then append to the buffer
       sourceTweets = sourceTweets.concat(uniqueTweets);
     }
-    return sourceTweets;
   }
+  return sourceTweets;
+}
 
-function fillData(sourceTweets){
+function fillData(sourceTweets) {
   //console.log(sourceTweets[0]);
   data.push.apply(data, sourceTweets);
   //console.log(data);
-  
+
   return data;
 }
 
@@ -97,33 +106,33 @@ function tweetIt(sourceTweets) {
       const tweets = [];
       for (let i = 0; i < 10; i++) {
         tweets.push(markov.generateSentence());
-          // .then(result => {
-          //   tweets.push(result);
-          // });
+        //console.log(tweets[i]);
+        // .then(result => {
+        //   tweets.push(result);
+        // });
       }
       Promise.all(tweets)
-      .then(results => 
-        function postTweets(T) {
-        T.post('statuses/update', { status: results.pop().string }, tweeted)
-        
-         function tweeted(err, data, response) {
-           if (err) {
-             console.log("Something went wrong!");
-             console.log(err);
-           } else {
-             console.log(data);
-           }
-        
-         }
-      });
+        .then(results => {
+            T.post('statuses/update', { status: results.pop().string }, tweeted);
+
+            function tweeted(err, data, response) {
+              if (err) {
+                console.log("Something went wrong!");
+                console.log(err);
+              } else {
+                console.log(response.data);
+              }
+
+            }
+    });
 
       // Promise.all(arrayOfPromises)
       // .then(arrayOfValues => {
       //   console.log(arrayOfValues)
       // });
       // console.log(tweets);
-    
-});
+
+    });
 }
 
 
