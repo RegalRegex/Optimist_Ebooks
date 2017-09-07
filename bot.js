@@ -7,8 +7,8 @@ var T = new twit(config);
 const data = [];
 const options = {
   maxLength: 130,
-  minWords: 10,
-  minScore: 25,
+  minWords: 3,
+  minScore: 15,
   checker: sentence => {
     return sentence.endsWith(''); // I want my tweets to end with a dot.
   }
