@@ -1,6 +1,7 @@
 //bot.js
 var twit = require('twit');
 var config = require('./config.js');
+var userAccounts = require('./user_accounts.js');
 const Markov = require('markov-strings');
 //var markovRequire = require('./markov.js');
 var T = new twit(config);
@@ -33,7 +34,7 @@ var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
 var re6 = /@\w{1,15}/gi // Removes @ mentions
 var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
-var re8 = /(cum|whore|piss|nsfw|cock|dick|porn)/gi //NAUGHTY FILTER
+var re8 = /(cum|whore|piss|nsfw|cock|dick|porn|fuckboi)/gi //NAUGHTY FILTER
 // /@\w{1,15}/g alternative @ regex from Shep
 
 var regexes = [re1, re2, re3, re4, re5, re6, re7, re8];
@@ -51,7 +52,7 @@ function filterTweet(rawTweet) { // filters tweets with regex
 async function getTweets(T) { // collects tweets and edits
 
   var params = {
-    screen_name: config.user,
+    screen_name: userAccounts.user,
     count: 200,
     max_id: undefined,
     include_rts: false,
@@ -62,22 +63,24 @@ async function getTweets(T) { // collects tweets and edits
   let sourceTweets = [];
   
   // while sourceTweets isn't full yet
-  for (handle in config.user) {
+  for (handle in userAccounts.user) {
     let counter = 0;
     let freshBatch;
     let uniqueTweets = [];
     let result;
     let tempMaxId;
-    params.screen_name = config.user[handle];
+    params.screen_name = userAccounts.user[handle];
     params.max_id = undefined;
-    console.log("Collecting tweets from " + config.user[handle]);
+    console.log("!!! Collecting tweets from \"" + userAccounts.user[handle] + "\" !!!");
     while (counter < 1000) {
       result = await T.get('statuses/user_timeline', params);
       freshBatch = result.data;
-      console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
+      
+      // BELOW: code to check array lenght and max ID
+      //console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
       // get oldest ID, and set params.max_id
       if (freshBatch.length === 0 || freshBatch.length - 1 === 0) {
-        console.log("Not enough tweets. Breaking.");
+        console.log("> Less than goal collection; Breaking.");
         break;
       }
       else {
@@ -91,7 +94,7 @@ async function getTweets(T) { // collects tweets and edits
         sourceTweets = sourceTweets.concat(uniqueTweets);
       }
     }
-    console.log(counter + " tweets gathered from account: " + config.user[handle]);
+    console.log(counter + " tweets gathered from account: " + userAccounts.user[handle]);
   }
   return sourceTweets;
 }
