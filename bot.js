@@ -23,6 +23,7 @@ getTweets(T).then(tweetIt);
 
 var tweet;
 var user_tweets = [];
+var handle;
 
 /* REGULAR EXPRESSIONS HERE */
 var re1 = /\b(RT|MT) .+/; // RTs
@@ -32,17 +33,18 @@ var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
 var re6 = /@\w{1,15}/gi // Removes @ mentions
 var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
+var re8 = /(cum|whore|piss|nsfw|cock|dick|porn)/gi //NAUGHTY FILTER
 // /@\w{1,15}/g alternative @ regex from Shep
 
-var regexes = [re1, re2, re3, re4, re5, re6, re7];
+var regexes = [re1, re2, re3, re4, re5, re6, re7, re8];
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
   let tmp;
   var tweetNew;
   for (let i = 0; i < regexes.length; i++) {
-    tmp = rawTweet.replace(regexes[i], '');
-    tweetNew = tmp;
+    rawTweet.text = rawTweet.text.replace(regexes[i], '');
   }
+  tweetNew = rawTweet.text;
   return tweetNew;
 }
 
@@ -58,48 +60,51 @@ async function getTweets(T) { // collects tweets and edits
   };
 
   let sourceTweets = [];
-  let freshBatch;
-  let uniqueTweets = [];
-  let result;
-  let tempMaxId;
+  
   // while sourceTweets isn't full yet
-  while (sourceTweets.length < 3600) {
-    result = await T.get('statuses/user_timeline', params);
-    freshBatch = result.data;
-    console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
-    // get oldest ID, and set params.max_id
-    if (freshBatch.length === 0 || freshBatch.length - 1 === 0) {
-      console.log("Not enough tweets. Breaking");
-      break;
+  for (handle in config.user) {
+    let counter = 0;
+    let freshBatch;
+    let uniqueTweets = [];
+    let result;
+    let tempMaxId;
+    params.screen_name = config.user[handle];
+    params.max_id = undefined;
+    console.log("Collecting tweets from " + config.user[handle]);
+    while (counter < 1000) {
+      result = await T.get('statuses/user_timeline', params);
+      freshBatch = result.data;
+      console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
+      // get oldest ID, and set params.max_id
+      if (freshBatch.length === 0 || freshBatch.length - 1 === 0) {
+        console.log("Not enough tweets. Breaking.");
+        break;
+      }
+      else {
+        params.max_id = freshBatch[freshBatch.length - 1].id - 1;
+        //tempMaxId = freshBatch[freshBatch.length - 5].id - 1;
+        counter += freshBatch.length;
+        // filter out duplicate tweets in new batch
+        uniqueTweets = freshBatch.map(filterTweet)
+        //.filter(tweet => tweet.length > 0);
+        // sanitise the new tweets, then append to the buffer
+        sourceTweets = sourceTweets.concat(uniqueTweets);
+      }
     }
-    else {
-      params.max_id = freshBatch[freshBatch.length - 1].id - 1;
-      tempMaxId = freshBatch[freshBatch.length - 5].id - 1;
-      // filter out duplicate tweets in new batch
-      uniqueTweets = freshBatch.map(tweet => filterTweet(tweet.text))
-        .filter(tweet => tweet.length > 0);
-      // sanitise the new tweets, then append to the buffer
-      sourceTweets = sourceTweets.concat(uniqueTweets);
-    }
+    console.log(counter + " tweets gathered from account: " + config.user[handle]);
   }
   return sourceTweets;
 }
 
 function fillData(sourceTweets) {
-  //console.log(sourceTweets[0]);
   data.push.apply(data, sourceTweets);
-  //console.log(data);
-
   return data;
 }
 
-function tweetIt(sourceTweets) {
+async function tweetIt(sourceTweets) {
   fillData(sourceTweets);
   const markov = new Markov(data, options);
   console.log('The length of the source:', sourceTweets.length);
-  //console.log(sourceTweets);
-  // Build the corpus
-  //console.log(sourceTweets[0]);
   markov.buildCorpus()
     .then(() => {
 
@@ -107,46 +112,44 @@ function tweetIt(sourceTweets) {
       const tweets = [];
       for (let i = 0; i < 10; i++) {
         tweets.push(markov.generateSentence());
-        //console.log(results[i].string);
-        // .then(result => {
-        //   tweets.push(result);
-        // });
       }
       Promise.all(tweets).then(tweets => {
         for (let tweet of tweets) {
-            console.log(tweet.string);
+            console.log("> " + tweet.string);
         }
       });
+      
       Promise.all(tweets)
         .then(results => {
           let actualTweet;
           let min = 1;
           let max = 5;
           let dropWordRand;
+          let regexTest;
           actualTweet = results.pop().string;
 
           function dropWordMath(min, max) {
             dropWordRand = Math.random() * (max - min) + min;
-            if ((dropWordRand === 4) && (actualTweet.test(/(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/) == true)){
-                dropWord();
+            regexTest = /(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/;
+            if ((dropWordRand <= 4 && dropWordRand > 3) /*&& (regexTest.test(actualTweet) == true)*/){
+                dropWord(actualTweet);
             }
           }
 
-          function dropWord()  {
-            actualTweet = actualTweet.replace(/\s\w+.$/, '');
+          function dropWord(actualTweet)  {
+            actualTweet = actualTweet.replace(/\s(\w+)$/, '');
             console.log("Dropping last word randomly");
             return actualTweet;
           }
           
           dropWordMath(min, max);
+          
           T.post('statuses/update', { status: actualTweet }, tweeted);
 
           function tweeted(err, data, response) {
             if (err) {
               console.log("Something went wrong!");
               console.log(err);
-            } else {
-              console.log(response.data);
             }
 
           }
