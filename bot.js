@@ -7,7 +7,7 @@ const Markov = require('markov-strings');
 var T = new twit(config);
 const data = [];
 const options = {
-  maxLength: 130,
+  maxLength: 100,
   minWords: 3,
   minScore: 25,
   checker: sentence => {
@@ -31,13 +31,15 @@ var re1 = /\b(RT|MT) .+/; // RTs
 var re2 = /(^|\s)(#[a-z\d-]+)/gi; // Hashtags
 var re3 = /\n/; // Extra lines
 var re4 = /\"|\(|\)/; // Attribution
-var re5 = /\s*(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
+var re5 = /\s*((https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
 var re6 = /@\w{1,15}/gi // Removes @ mentions
 var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
-var re8 = /(cum|whore|piss|nsfw|cock|dick|porn|fuckboi)/gi //NAUGHTY FILTER
+var re8 = /(cum|whore|piss|nsfw|cocks?|dicks?|porns?|fuckboi|shits?|fucks?|fucking|fucker)/gi //NAUGHTY FILTER
+var re9 = /&gt;/gi // Removing weird junky unicode that sometimes sticks
+var re10 = /\"\b/g // Removing extraneous random quotation marks
 // /@\w{1,15}/g alternative @ regex from Shep
 
-var regexes = [re1, re2, re3, re4, re5, re6, re7, re8];
+var regexes = [re1, re2, re3, re4, re5, re6, re7, re8, re9, re10];
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
   let tmp;
@@ -126,26 +128,60 @@ async function tweetIt(sourceTweets) {
         .then(results => {
           let actualTweet;
           let min = 1;
-          let max = 5;
-          let dropWordRand;
+          let max = 10;
+          let varRandom;
           let regexTest;
           actualTweet = results.pop().string;
 
           function dropWordMath(min, max) {
-            dropWordRand = Math.random() * (max - min) + min;
+            varRandom = Math.floor(Math.random() * (max - min) + min);
             regexTest = /(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/;
-            if ((dropWordRand <= 4 && dropWordRand > 3) /*&& (regexTest.test(actualTweet) == true)*/){
-                dropWord(actualTweet);
+            if ((varRandom <= 10 && varRandom > 7) /*&& (regexTest.test(actualTweet) == true)*/){
+                dropWord();
+            }
+            if (varRandom <= 8 && varRandom > 7){
+              ALLTHECAPS();
+            }
+            if (varRandom <= 10 && varRandom > 6 && varRandom != 5){
+              beeTime();
+            }
+            if (varRandom <= 6 && varRandom >= 1 && varRandom != 5){
+              knifeTime();
+            }
+            if (varRandom === 5){
+              knifeTime();
+              beeTime();
             }
           }
 
-          function dropWord(actualTweet)  {
-            actualTweet = actualTweet.replace(/\s(\w+)$/, '');
+          // Randomly drops last word of sentence
+          function dropWord()  {
+            actualTweet = actualTweet.replace(/\b(\w+)\W*$/, '');
             console.log("Dropping last word randomly");
+            console.log("New tweet: " + actualTweet);
+            return actualTweet;
+          }
+
+          // Randomly re-prints entire tweet in caps
+          function ALLTHECAPS() {
+            actualTweet = actualTweet.toUpperCase();
+            console.log("ALL THE CAPS");
+            console.log("New tweet: " + actualTweet);
+            return actualTweet;
+          }
+
+          function beeTime(){
+            actualTweet = "🐝" + actualTweet;
+            return actualTweet;
+          }
+
+          function knifeTime(){
+            actualTweet = "🔪" + actualTweet;
             return actualTweet;
           }
           
           dropWordMath(min, max);
+          console.log("Here's what tweeted: " + actualTweet);
           
           T.post('statuses/update', { status: actualTweet }, tweeted);
 
