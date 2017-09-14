@@ -7,7 +7,7 @@ const Markov = require('markov-strings');
 var T = new twit(config);
 const data = [];
 const options = {
-  maxLength: 100,
+  maxLength: 130,
   minWords: 3,
   minScore: 25,
   checker: sentence => {
@@ -128,24 +128,28 @@ async function tweetIt(sourceTweets) {
         .then(results => {
           let actualTweet;
           let min = 1;
-          let max = 10;
+          let max = 11;
           let varRandom;
           let regexTest;
           actualTweet = results.pop().string;
 
           function dropWordMath(min, max) {
             varRandom = Math.floor(Math.random() * (max - min) + min);
+            varRandom2 = Math.floor(Math.random() * (max - min) + min);
             regexTest = /(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/;
-            if ((varRandom <= 10 && varRandom > 7) /*&& (regexTest.test(actualTweet) == true)*/){
+            if ((varRandom <= 10 && varRandom > 7) && (regexTest.test(actualTweet) == true)){
                 dropWord();
             }
             if (varRandom <= 8 && varRandom > 7){
               ALLTHECAPS();
             }
-            if (varRandom <= 10 && varRandom > 6 && varRandom != 5){
+            if (varRandom2 <=2 && varRandom2 >= 1){
+              shortNSweet();
+            }
+            if (varRandom <= 10 && varRandom > 5 && varRandom != 5){
               beeTime();
             }
-            if (varRandom <= 6 && varRandom >= 1 && varRandom != 5){
+            if (varRandom <= 5 && varRandom >= 1 && varRandom != 5){
               knifeTime();
             }
             if (varRandom === 5){
@@ -168,6 +172,20 @@ async function tweetIt(sourceTweets) {
             console.log("ALL THE CAPS");
             console.log("New tweet: " + actualTweet);
             return actualTweet;
+          }
+
+          function shortNSweet() {
+            String.prototype.trunc =
+            function( n, useWordBoundary ){
+                if (this.length <= n) { return this; }
+                var subString = this.substr(0, n-1);
+                return (useWordBoundary 
+                   ? subString.substr(0, subString.lastIndexOf(' ')) 
+                   : subString);
+             };
+            actualTweet = actualTweet.trunc(20, true);
+            console.log("Short n' Sweet!");
+            return actualTweet
           }
 
           function beeTime(){
