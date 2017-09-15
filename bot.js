@@ -34,7 +34,7 @@ var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*((https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
 var re6 = /@\w{1,15}/gi // Removes @ mentions
 var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
-var re8 = /(cum|whore|piss|nsfw|cocks?|dicks?|porns?|fuckboi|shits?|fucks?|fucking|fucker)/gi //NAUGHTY FILTER
+var re8 = /(cum|whore|piss|nsfw|cocks?|dicks?|porns?|fuckboi|shits?|fucks?|fucking|fucker|white people|black people)/gi //NAUGHTY FILTER
 var re9 = /&gt;/gi // Removing weird junky unicode that sometimes sticks
 var re10 = /\"\b/g // Removing extraneous random quotation marks
 // /@\w{1,15}/g alternative @ regex from Shep
