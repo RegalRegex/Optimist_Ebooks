@@ -34,12 +34,14 @@ var re4 = /\"|\(|\)/; // Attribution
 var re5 = /\s*((https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
 var re6 = /@\w{1,15}/gi // Removes @ mentions
 var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
-var re8 = /(cum|whore|piss|nsfw|cocks?|dicks?|porns?|fuckboi|shits?|fucks?|fucking|fucker|white people|black people)/gi //NAUGHTY FILTER
-var re9 = /&gt;/gi // Removing weird junky unicode that sometimes sticks
-var re10 = /\"\b/g // Removing extraneous random quotation marks
+
+var re8 = /&gt;/gi // Removing weird junky unicode that sometimes sticks
+var re9 = /\"\b/g // Removing extraneous random quotation marks
 // /@\w{1,15}/g alternative @ regex from Shep
 
-var regexes = [re1, re2, re3, re4, re5, re6, re7, re8, re9, re10];
+var nsfw = /(cum|whores?|piss|nsfw|cocks?|dicks?|porns?|sluts?|shits?|fucks?|fucking|fuckers?|(white|black) people|jews?|nazis?)/gi //NAUGHTY FILTER
+
+var regexes = [re1, re2, re3, re4, re5, re6, re7, re8, re9];
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
   let tmp;
@@ -48,7 +50,31 @@ function filterTweet(rawTweet) { // filters tweets with regex
     rawTweet.text = rawTweet.text.replace(regexes[i], '');
   }
   tweetNew = rawTweet.text;
+  if (nsfw.test(tweetNew) == true) {
+    nsfwReplace();
+  }
   return tweetNew;
+}
+
+function nsfwReplace() {
+let nsfwTemp;
+if (/cum/gi.test(tweetNew) == true){  tweetNew.replace(/cum/gi, 'slime'); }
+else if (/whores?/gi.test(tweetNew) == true) {  tweetNew.replace(/whore/gi, 'honeysuckler') && tweetNew.replace(/whores/gi, 'honeysucklers'); }
+else if (/piss/gi.test(tweetNew) == true) {  tweetNew.replace(/piss/gi, 'juice'); }
+else if (/nsfw/gi.test(tweetNew) == true) {  tweetNew.replace(/nsfw/gi, 'not safe for worms'); }
+else if (/cocks?/gi.test(tweetNew) == true) {  tweetNew.replace(/cock/gi, 'thorax') && tweetNew.replace(/cocks/gi, 'thoraxes'); } 
+else if (/porns?/gi.test(tweetNew) == true) {  tweetNew.replace(/porn/gi, 'sauce') && tweetNew.replace(/porns/gi, 'sauces'); } 
+else if (/sluts?/gi.test(tweetNew) == true) {  tweetNew.replace(/slut/gi, 'bee-lover') && tweetNew.replace(/sluts/gi, 'bee-lovers'); } 
+else if (/dicks?/gi.test(tweetNew) == true) {  tweetNew.replace(/dick/gi, 'stinger') && tweetNew.replace(/dicks/gi, 'stingers'); }
+else if (/shits?/gi.test(tweetNew) == true) {  tweetNew.replace(/shit/gi, 'bugger') && tweetNew.replace(/shits/gi, 'buggers'); } 
+else if (/fucks?/gi.test(tweetNew) == true) {  tweetNew.replace(/fuck/gi, 'heck') && tweetNew.replace(/fucks/gi, 'heckers'); }
+else if (/fuckers?/gi.test(tweetNew) == true) {  tweetNew.replace(/fucker/gi, 'hecker') && tweetNew.replace(/fuckers/gi, 'heckers'); } 
+else if (/fucking/gi.test(tweetNew) == true) {  tweetNew.replace(/fucking/gi, 'hecking'); } 
+else if (/(white|black) people/gi.test(tweetNew) == true) {  tweetNew.replace(/(white|black) people/gi, 'snake people'); }
+else if (/jews?/gi.test(tweetNew) == true) {  tweetNew.replace(/jew/gi, 'bee') && tweetNew.replace(/jews/gi, 'bees'); } 
+else if (/nazis?/gi.test(tweetNew) == true) { tweetNew.replace(/nazi/gi, 'wasp') && tweetNew.replace(/nazis/gi, 'wasps'); } 
+
+return tweetNew;
 }
 
 async function getTweets(T) { // collects tweets and edits
@@ -63,7 +89,7 @@ async function getTweets(T) { // collects tweets and edits
   };
 
   let sourceTweets = [];
-  
+
   // while sourceTweets isn't full yet
   for (handle in userAccounts.user) {
     let counter = 0;
@@ -77,7 +103,7 @@ async function getTweets(T) { // collects tweets and edits
     while (counter < 1000) {
       result = await T.get('statuses/user_timeline', params);
       freshBatch = result.data;
-      
+
       // BELOW: code to check array lenght and max ID
       //console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
       // get oldest ID, and set params.max_id
@@ -120,10 +146,10 @@ async function tweetIt(sourceTweets) {
       }
       Promise.all(tweets).then(tweets => {
         for (let tweet of tweets) {
-            console.log("> " + tweet.string);
+          console.log("> " + tweet.string);
         }
       });
-      
+
       Promise.all(tweets)
         .then(results => {
           let actualTweet;
@@ -137,29 +163,29 @@ async function tweetIt(sourceTweets) {
             varRandom = Math.floor(Math.random() * (max - min) + min);
             varRandom2 = Math.floor(Math.random() * (max - min) + min);
             regexTest = /(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/;
-            if ((varRandom <= 10 && varRandom > 7) && (regexTest.test(actualTweet) == true)){
-                dropWord();
+            if ((varRandom <= 10 && varRandom > 7) && (regexTest.test(actualTweet) == true)) {
+              dropWord();
             }
-            if (varRandom <= 8 && varRandom > 7){
+            if (varRandom <= 8 && varRandom > 7) {
               ALLTHECAPS();
             }
-            if (varRandom2 <=2 && varRandom2 >= 1){
+            if (varRandom2 <= 2 && varRandom2 >= 1) {
               shortNSweet();
             }
-            if (varRandom <= 10 && varRandom > 5 && varRandom != 5){
+            if (varRandom <= 10 && varRandom > 5 && varRandom != 5) {
               beeTime();
             }
-            if (varRandom <= 5 && varRandom >= 1 && varRandom != 5){
+            if (varRandom <= 5 && varRandom >= 1 && varRandom != 5) {
               knifeTime();
             }
-            if (varRandom === 5){
+            if (varRandom === 5) {
               knifeTime();
               beeTime();
             }
           }
 
           // Randomly drops last word of sentence
-          function dropWord()  {
+          function dropWord() {
             actualTweet = actualTweet.replace(/\b(\w+)\W*$/, '');
             console.log("Dropping last word randomly");
             console.log("New tweet: " + actualTweet);
@@ -176,31 +202,31 @@ async function tweetIt(sourceTweets) {
 
           function shortNSweet() {
             String.prototype.trunc =
-            function( n, useWordBoundary ){
+              function (n, useWordBoundary) {
                 if (this.length <= n) { return this; }
-                var subString = this.substr(0, n-1);
-                return (useWordBoundary 
-                   ? subString.substr(0, subString.lastIndexOf(' ')) 
-                   : subString);
-             };
+                var subString = this.substr(0, n - 1);
+                return (useWordBoundary
+                  ? subString.substr(0, subString.lastIndexOf(' '))
+                  : subString);
+              };
             actualTweet = actualTweet.trunc(20, true);
             console.log("Short n' Sweet!");
             return actualTweet
           }
 
-          function beeTime(){
+          function beeTime() {
             actualTweet = "🐝" + actualTweet;
             return actualTweet;
           }
 
-          function knifeTime(){
+          function knifeTime() {
             actualTweet = "🔪" + actualTweet;
             return actualTweet;
           }
-          
+
           dropWordMath(min, max);
           console.log("Here's what tweeted: " + actualTweet);
-          
+
           T.post('statuses/update', { status: actualTweet }, tweeted);
 
           function tweeted(err, data, response) {
