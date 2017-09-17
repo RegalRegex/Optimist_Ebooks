@@ -51,13 +51,13 @@ function filterTweet(rawTweet) { // filters tweets with regex
   }
   tweetNew = rawTweet.text;
   if (nsfw.test(tweetNew) == true) {
-    nsfwReplace();
+    nsfwReplace(tweetNew);
   }
   return tweetNew;
 }
 
-function nsfwReplace() {
-let nsfwTemp;
+function nsfwReplace(tweetNew) {
+
 if (/cum/gi.test(tweetNew) == true){  tweetNew.replace(/cum/gi, 'slime'); }
 else if (/whores?/gi.test(tweetNew) == true) {  tweetNew.replace(/whore/gi, 'honeysuckler') && tweetNew.replace(/whores/gi, 'honeysucklers'); }
 else if (/piss/gi.test(tweetNew) == true) {  tweetNew.replace(/piss/gi, 'juice'); }
