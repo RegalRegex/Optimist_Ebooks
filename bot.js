@@ -58,21 +58,23 @@ function filterTweet(rawTweet) { // filters tweets with regex
 
 function nsfwReplace(tweetNew) {
 
-if (/cum/gi.test(tweetNew) == true){  tweetNew.replace(/cum/gi, 'slime'); }
-else if (/whores?/gi.test(tweetNew) == true) {  tweetNew.replace(/whore/gi, 'honeysuckler') && tweetNew.replace(/whores/gi, 'honeysucklers'); }
-else if (/piss/gi.test(tweetNew) == true) {  tweetNew.replace(/piss/gi, 'juice'); }
-else if (/nsfw/gi.test(tweetNew) == true) {  tweetNew.replace(/nsfw/gi, 'not safe for worms'); }
-else if (/cocks?/gi.test(tweetNew) == true) {  tweetNew.replace(/cock/gi, 'thorax') && tweetNew.replace(/cocks/gi, 'thoraxes'); } 
-else if (/porns?/gi.test(tweetNew) == true) {  tweetNew.replace(/porn/gi, 'sauce') && tweetNew.replace(/porns/gi, 'sauces'); } 
-else if (/sluts?/gi.test(tweetNew) == true) {  tweetNew.replace(/slut/gi, 'bee-lover') && tweetNew.replace(/sluts/gi, 'bee-lovers'); } 
-else if (/dicks?/gi.test(tweetNew) == true) {  tweetNew.replace(/dick/gi, 'stinger') && tweetNew.replace(/dicks/gi, 'stingers'); }
-else if (/shits?/gi.test(tweetNew) == true) {  tweetNew.replace(/shit/gi, 'bugger') && tweetNew.replace(/shits/gi, 'buggers'); } 
-else if (/fucks?/gi.test(tweetNew) == true) {  tweetNew.replace(/fuck/gi, 'heck') && tweetNew.replace(/fucks/gi, 'heckers'); }
-else if (/fuckers?/gi.test(tweetNew) == true) {  tweetNew.replace(/fucker/gi, 'hecker') && tweetNew.replace(/fuckers/gi, 'heckers'); } 
-else if (/fucking/gi.test(tweetNew) == true) {  tweetNew.replace(/fucking/gi, 'hecking'); } 
-else if (/(white|black) people/gi.test(tweetNew) == true) {  tweetNew.replace(/(white|black) people/gi, 'snake people'); }
-else if (/jews?/gi.test(tweetNew) == true) {  tweetNew.replace(/jew/gi, 'bee') && tweetNew.replace(/jews/gi, 'bees'); } 
-else if (/nazis?/gi.test(tweetNew) == true) { tweetNew.replace(/nazi/gi, 'wasp') && tweetNew.replace(/nazis/gi, 'wasps'); } 
+  // TODO: regex for fuck that will ignore fuckers and fucking
+if (/cum/i.test(tweetNew) == true){ test = true; tweetNew = tweetNew.replace(/cum/gi, 'slime'); }
+else if (/whores?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/whore/gi, 'honeysuckler'); tweetNew = tweetNew.replace(/whores/gi, 'honeysucklers'); }
+else if (/piss/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/piss/gi, 'juice'); }
+else if (/nsfw/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/nsfw/gi, 'not safe for worms'); }
+else if (/cocks?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/cock/gi, 'thorax'); tweetNew = tweetNew.replace(/cocks/gi, 'thoraxes'); } 
+else if (/porns?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/porn/gi, 'sauce'); tweetNew = tweetNew.replace(/porns/gi, 'sauces'); } 
+else if (/sluts?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/slut/gi, 'bee-lover'); tweetNew = tweetNew.replace(/sluts/gi, 'bee-lovers'); } 
+else if (/dicks?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/dick/gi, 'stinger'); tweetNew = tweetNew.replace(/dicks/gi, 'stingers'); }
+else if (/shits?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/shit/gi, 'bugger'); tweetNew = tweetNew.replace(/shits/gi, 'buggers'); } 
+else if (/fuckers?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/fucker/gi, 'hecker'); tweetNew = tweetNew.replace(/fuckers/gi, 'heckers'); } 
+else if (/fucking/i.test(tweetNew) == true) { tweetNew = tweetNew = tweetNew.replace(/fucking/gi, 'hecking'); } 
+else if (/fucks?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/fuck/gi, 'heck'); tweetNew = tweetNew.replace(/fucks/gi, 'heckers'); }
+else if (/(white|black) people/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/(white|black) people/gi, 'snake people'); }
+else if (/jews?/i.test(tweetNew) == true) {  tweetNew = tweetNew.replace(/jew/gi, 'bee'); tweetNew = tweetNew.replace(/jews/gi, 'bees'); } 
+else if (/nazis?/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/nazi/gi, 'wasp'); tweetNew = tweetNew.replace(/nazis/gi, 'wasps'); } 
+else {tweetNew = tweetNew;}
 
 return tweetNew;
 }
