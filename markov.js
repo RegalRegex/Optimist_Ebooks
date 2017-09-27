@@ -5,7 +5,7 @@ const data = [/* insert a few hundreds/thousands objects here, each one with a "
 
 // Some options to generate Twitter-ready strings
 const options = {
-  maxLength: 140,
+  maxLength: 280,
   minWords: 10,
   minScore: 25,
   checker: sentence => {
