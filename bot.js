@@ -7,7 +7,7 @@ const Markov = require('markov-strings');
 var T = new twit(config);
 const data = [];
 const options = {
-  maxLength: 260,
+  maxLength: 130,
   minWords: 3,
   minScore: 25,
   checker: sentence => {
