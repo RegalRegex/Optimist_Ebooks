@@ -20,7 +20,35 @@ const options = {
 // TODO: Get rid of underscores in tweets
 // TODO: check 
 
-getTweets(T).then(tweetIt);
+// Setting up user stream
+var stream = T.stream('user');
+
+// Anytome someone follows me
+stream.on('tweet', repliedTo);
+
+function repliedTo(eventMsg) {
+  console.log("reply event");
+
+  // This is a workaround to produce and store eventMsg data (instead of reading the documentation)
+  // var fs = require('fs');
+  // var json = JSON.stringify(eventMsg,null,2);
+  // fs.writeFile("tweet.json", json); 
+
+  var replyTo = eventMs.in_reply_to_screen_name;
+  var text = eventMsg.text;
+  var from = eventMsg.user.screen_name;
+
+  if (replyTo === 'BeeSquadBot') {
+    var newTweet = // reply tweet goes here
+    tweetIt(newTweet);
+  }
+}
+
+setInterval(tweetFunctions, 1000*60*20);
+function tweetFunctions()
+{
+  getTweets(T).then(tweetIt);
+}
 
 var tweet;
 var user_tweets = [];
