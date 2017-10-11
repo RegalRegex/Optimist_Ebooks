@@ -2,7 +2,7 @@
 var twit = require('twit');
 var config = require('./config.js');
 var userAccounts = require('./user_accounts.js');
-var nsfwEdits = require('./nsfwFilterEdits.js');
+const nsfwEdits = require('./nsfwFilterEdits.js');
 const Markov = require('markov-strings');
 //var markovRequire = require('./markov.js');
 
@@ -135,9 +135,9 @@ async function tweetIt(sourceTweets) {
           let regexTest;
           actualTweet = results.pop().string;
 
-          nsfwEdits.isNsfw(actualTweet);
-          if (nsfwEdits.isSafe === false){
-            actualTweet = nsfwReplace(actualTweet);
+          isSafe = nsfwEdits.isNsfw(actualTweet);
+          if (isSafe === false){
+            actualTweet = nsfwEdits.nsfwReplace(actualTweet);
           }
           console.log(actualTweet);
 

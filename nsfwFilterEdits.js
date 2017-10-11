@@ -1,7 +1,77 @@
+module.exports = {
+    isNsfw: isNsfw,
+    nsfwReplace: nsfwReplace
+};
+
 function nsfwReplace(tweetNew) {
 
     // TODO: regex for fuck that will ignore fuckers and fucking
-    if (/cum/i.test(tweetNew) == true) { test = true; tweetNew = tweetNew.replace(/cum/gi, 'slime'); }
+    var nsfwFilterRegexes = [
+        /cum/ig,
+        /whores?/ig,
+        /ass(hole)?s?/ig,
+        /piss/ig,
+        /nsfw/ig,
+        /cocks?/ig,
+        /porns?/ig,
+        /sluts?/ig,
+        /dicks?/ig,
+        /shits?/ig,
+        /fuckers?/ig,
+        /fucking/ig,
+        /fucks?/ig,
+        /(white|black) people/ig,
+        /jews?/ig,
+        /nazis?/ig
+    ];
+    var sfwFilterReplace = [
+        'slime',
+        'honeysuckler',
+        'butt',
+        'juice',
+        'not safe for worms',
+        'thorax',
+        'sauce',
+        'bee-lover',
+        'stinger',
+        'bugger',
+        'hecker',
+        'hecking',
+        'heck',
+        'snake people',
+        'bee',
+        'wasp'
+    ];
+
+    var sfwFilterPluralReplace = [
+        'slimes',
+        'honeysucklers',
+        'butts',
+        'juice',
+        'not safe for worms',
+        'thoraxes',
+        'sauces',
+        'bee-lovers',
+        'stingers',
+        'buggers',
+        'heckers',
+        'hecking',
+        'heckers',
+        'snake people',
+        'bees',
+        'wasps'
+    ];
+
+    for(let i = 0; i < nsfwFilterRegexes.length; i++){
+        if (nsfwFilterRegexes[i].test(tweetNew) == true && /\w+s\b/.test(tweetNew) == false){
+            tweetNew = tweetNew.replace(nsfwFilterRegexes[i], sfwFilterReplace[i]);
+        }
+        else if (nsfwFilterRegexes[i].test(tweetNew) == true && /\w+s\b/.test(tweetNew) == true){
+            tweetNew = tweetNew.replace(nsfwFilterRegexes[i], sfwFilterPluralReplace[i]);
+        }
+    }
+/*
+    if (/cum/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/cum/gi, 'slime'); }
     else if (/whores?/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/whore/gi, 'honeysuckler'); tweetNew = tweetNew.replace(/whores/gi, 'honeysucklers'); }
     else if (/ass(hole)?s?/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/ass(hole)?e?s/gi, 'butts'); tweetNew = tweetNew.replace(/ass(hole)?/gi, 'butt'); }
     else if (/piss/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/piss/gi, 'juice'); }
@@ -17,8 +87,8 @@ function nsfwReplace(tweetNew) {
     else if (/(white|black) people/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/(white|black) people/gi, 'snake people'); }
     else if (/jews?/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/jews/gi, 'bees'); tweetNew = tweetNew.replace(/jew/gi, 'bee'); }
     else if (/nazis?/i.test(tweetNew) == true) { tweetNew = tweetNew.replace(/nazis/gi, 'wasps'); tweetNew = tweetNew.replace(/nazi/gi, 'wasp'); }
-    else { tweetNew = tweetNew; }
-
+    else { tweetNew = tweetNew; console.log("nothing naughty!"); }
+*/
     return tweetNew;
 }
 
@@ -33,4 +103,4 @@ function isNsfw(actualTweet){
   }
 }
 
-var nsfw = /(cum|whores?|piss|nsfw|cocks?|dicks?|porns?|sluts?|shits?|fucks?|fucking|fuckers?|(white|black) people|jews?|nazis?)/gi; //NAUGHTY FILTER
+var nsfw = /(cum|whores?|ass(hole)?s?|piss|nsfw|cocks?|dicks?|porns?|sluts?|shits?|fucks?|fucking|fuckers?|(white|black) people|jews?|nazis?)/gi; //NAUGHTY FILTER
