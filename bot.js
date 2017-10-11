@@ -25,6 +25,7 @@ getTweets(T).then(tweetIt);
 var tweet;
 var user_tweets = [];
 var handle;
+var singleOrigin = false;
 
 /* REGULAR EXPRESSIONS HERE */
 var re1 = /\b(RT|MT) .+/; // RTs
@@ -82,6 +83,78 @@ return tweetNew;
 
 async function getTweets(T) { // collects tweets and edits
 
+  var varRandom3 = /*Math.floor(Math.random() * (max - min) + min)*/ 1 //test!!!;
+  
+  if (varRandom3 >= 1 && varRandom <= 3) {
+    singleSource(T);
+    console.log("going single source!");
+  }
+  else {
+    multiSource(T);
+    console.log("going MULTI source!");
+  }
+
+  async function singleSource(T){
+    let min = 1;
+    let max = length.userAccounts.user;
+    let i = (Math.floor(Math.random() * (max-min) + min)) - 1;
+    var params = {
+      screen_name: userAccounts.user[i],
+      count: 200,
+      max_id: undefined,
+      include_rts: false,
+      trim_user: true,
+      exclude_replies: true
+    };
+
+    let sourceTweets = [];
+
+    let counter = 0;
+    let freshBatch;
+    let uniqueTweets = [];
+    let result;
+    let tempMaxId;
+    params.screen_name = userAccounts.user[handle];
+    params.max_id = undefined;
+    console.log("!!! ONLY collecting tweets from \"" + userAccounts.user[i] + "\" !!!");
+
+    while (counter < 3000) {
+      result = await T.get('statuses/user_timeline', params);
+      freshBatch = result.data;
+
+      // BELOW: code to check array lenght and max ID
+      //console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
+      // get oldest ID, and set params.max_id
+      if (freshBatch.length === 0 || freshBatch.length - 1 === 0) {
+        console.log("> Less than goal collection; Breaking.");
+        break;
+      }
+      else {
+        params.max_id = freshBatch[freshBatch.length - 1].id - 1;
+        //tempMaxId = freshBatch[freshBatch.length - 5].id - 1;
+        counter += freshBatch.length;
+        // filter out duplicate tweets in new batch
+        uniqueTweets = freshBatch.map(filterTweet)
+        //.filter(tweet => tweet.length > 0);
+        // sanitise the new tweets, then append to the buffer
+        sourceTweets = sourceTweets.concat(uniqueTweets);
+      }
+      }
+      if (length.sourceTweets < 1000){
+        console.log("This account doesn't have enough tweets! Multi-sourcing instead!");
+        multiSource();
+      }
+        else {
+          singleOrigin = true;
+        }
+      
+        console.log(counter + " tweets gathered from account: " + userAccounts.user[i]);
+    return sourceTweets;
+      }
+    
+  
+
+  async function multiSource(T){
   var params = {
     screen_name: userAccounts.user,
     count: 200,
@@ -127,6 +200,7 @@ async function getTweets(T) { // collects tweets and edits
     }
     console.log(counter + " tweets gathered from account: " + userAccounts.user[handle]);
   }
+}
   return sourceTweets;
 }
 
