@@ -108,4 +108,4 @@ function isNsfw(actualTweet){
   }
 }
 
-var nsfw = /(cum|whores?|ass(hole)?s?|piss|nsfw|cocks?|dicks?|porns?|sluts?|shits?|fucks?|fucking|fuckers?|(white|black) people|jews?|nazis?)/gi; //NAUGHTY FILTER
+var nsfw = /(cum|whores?|ass(hole)?s?|piss|nsfw|cocks?|dicks?|porns?|sluts?|shits?|fucks?|fucking|fuckers?|(white|black) person|(white|black) people|jews?|nazis?|racists?)/gi; //NAUGHTY FILTER
