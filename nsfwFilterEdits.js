@@ -20,9 +20,11 @@ function nsfwReplace(tweetNew) {
         /fuckers?/ig,
         /fucking/ig,
         /fucks?/ig,
+        /(white|black) person/ig,
         /(white|black) people/ig,
         /jews?/ig,
-        /nazis?/ig
+        /nazis?/ig,
+        /racists?/ig
     ];
     var sfwFilterReplace = [
         'slime',
@@ -38,9 +40,11 @@ function nsfwReplace(tweetNew) {
         'hecker',
         'hecking',
         'heck',
+        'snake person',
         'snake people',
         'bee',
-        'wasp'
+        'wasp',
+        'jerk'
     ];
 
     var sfwFilterPluralReplace = [
@@ -59,7 +63,8 @@ function nsfwReplace(tweetNew) {
         'heckers',
         'snake people',
         'bees',
-        'wasps'
+        'wasps',
+        'jerks'
     ];
 
     for(let i = 0; i < nsfwFilterRegexes.length; i++){
