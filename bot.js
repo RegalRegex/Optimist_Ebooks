@@ -136,7 +136,7 @@ async function tweetIt(sourceTweets) {
           actualTweet = results.pop().string;
 
           isSafe = nsfwEdits.isNsfw(actualTweet);
-          if (isSafe === false){
+          if (isSafe == false){
             actualTweet = nsfwEdits.nsfwReplace(actualTweet);
           }
           console.log(actualTweet);
