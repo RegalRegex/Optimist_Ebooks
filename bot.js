@@ -67,6 +67,7 @@ async function getTweets(T) { // collects tweets and edits
   let sourceTweets = [];
 
   // while sourceTweets isn't full yet
+  try {
   for (handle in userAccounts.user) {
     let counter = 0;
     let freshBatch;
@@ -100,6 +101,10 @@ async function getTweets(T) { // collects tweets and edits
     }
     console.log(counter + " tweets gathered from account: " + userAccounts.user[handle]);
   }
+} catch(err) {
+  throw 'error collecting tweets';
+  sourceTweets = null;
+}
   return sourceTweets;
 }
 
