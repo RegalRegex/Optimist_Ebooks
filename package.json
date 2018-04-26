@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "markov-strings": "^1.3.3",
+    "markov-strings": "^1.5.0",
     "twit": "^2.2.9"
   }
 }
