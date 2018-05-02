@@ -11,7 +11,7 @@ const data = [];
 const options = {
   maxLength: 130,
   minWords: 3,
-  minScore: 25,
+  minScore: 10, // Nonsensical grading of tweet (higher = more nonsense)
   checker: sentence => {
     return sentence.endsWith(''); // I want my tweets to end with a dot.
   }
