@@ -44,7 +44,6 @@ var re9 = /\"\b/g // Removing extraneous random quotation marks
 var regexes = [re1, re2, re3, re4, re5, re6, re7, re8, re9];
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
-  let tmp;
   var tweetNew;
   for (let i = 0; i < regexes.length; i++) {
     rawTweet.text = rawTweet.text.replace(regexes[i], '');
@@ -67,16 +66,15 @@ async function getTweets(T) { // collects tweets and edits
   let sourceTweets = [];
 
   // while sourceTweets isn't full yet
-  try {
   for (handle in userAccounts.user) {
     let counter = 0;
     let freshBatch;
     let uniqueTweets = [];
     let result;
-    let tempMaxId;
+    let emoji = userAccounts.emoji[handle];
     params.screen_name = userAccounts.user[handle];
     params.max_id = undefined;
-    console.log("!!! Collecting tweets from \"" + userAccounts.user[handle] + "\" !!!");
+    console.log(emoji + " Collecting tweets from \"" + userAccounts.user[handle] + "\" " + emoji);
     while (counter < 1000) {
       result = await T.get('statuses/user_timeline', params);
       freshBatch = result.data;
@@ -89,22 +87,21 @@ async function getTweets(T) { // collects tweets and edits
         break;
       }
       else {
+        try {
         params.max_id = freshBatch[freshBatch.length - 1].id - 1;
-        //tempMaxId = freshBatch[freshBatch.length - 5].id - 1;
         counter += freshBatch.length;
         // filter out duplicate tweets in new batch
         uniqueTweets = freshBatch.map(filterTweet)
-        //.filter(tweet => tweet.length > 0);
-        // sanitise the new tweets, then append to the buffer
+        // sanitize the new tweets, then append to the buffer
         sourceTweets = sourceTweets.concat(uniqueTweets);
+        }
+        catch(e){
+          throw TypeError;
+        }
       }
     }
     console.log(counter + " tweets gathered from account: " + userAccounts.user[handle]);
   }
-} catch(err) {
-  throw 'error collecting tweets';
-  sourceTweets = null;
-}
   return sourceTweets;
 }
 
@@ -146,6 +143,7 @@ async function tweetIt(sourceTweets) {
           }
           console.log(actualTweet);
 
+          // Random functions to add a little fun/randomness to the bot
           function dropWordMath(min, max) {
             varRandom = Math.floor(Math.random() * (max - min) + min);
             varRandom2 = Math.floor(Math.random() * (max - min) + min);
