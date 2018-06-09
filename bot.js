@@ -2,46 +2,22 @@
 var twit = require('twit');
 var config = require('./config.js');
 var userAccounts = require('./user_accounts.js');
+const cleanUp = require ('./tweetCleanup.js');
 const nsfwEdits = require('./nsfwFilterEdits.js');
 const Markov = require('markov-strings');
-//var markovRequire = require('./markov.js');
 
 var T = new twit(config);
 const data = [];
 const options = {
   maxLength: 130,
   minWords: 3,
-  minScore: 10, // Nonsensical grading of tweet (higher = more nonsense)
-  checker: sentence => {
-    return sentence.endsWith(''); // I want my tweets to end with a dot.
-  }
+  minScore: 10, // How nonsensical tweet should be (higher = more nonsense)
 };
-
-// TODO: Check if random word drop is working
-// TODO: Automate
-// TODO: Get rid of underscores in tweets
-// TODO: check 
 
 getTweets(T).then(tweetIt);
 
-var tweet;
-var user_tweets = [];
 var handle;
-
-/* REGULAR EXPRESSIONS HERE */
-var re1 = /\b(RT|MT) .+/; // RTs
-var re2 = /(^|\s)(#[a-z\d-]+)/gi; // Hashtags
-var re3 = /\n/; // Extra lines
-var re4 = /\"|\(|\)/; // Attribution
-var re5 = /\s*((https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi // Removes hyperlinks
-var re6 = /@\w{1,15}/gi // Removes @ mentions
-var re7 = /(^|\s)(_[a-z\d-]+)/gi // Removes underscores
-
-var re8 = /&gt;/gi // Removing weird junky unicode that sometimes sticks
-var re9 = /\"\b/g // Removing extraneous random quotation marks
-// /@\w{1,15}/g alternative @ regex from Shep
-
-var regexes = [re1, re2, re3, re4, re5, re6, re7, re8, re9];
+var regexes = cleanUp.cleanupArray;
 // str.replace(regexp|substr, newSubstr|function)
 function filterTweet(rawTweet) { // filters tweets with regex
   var tweetNew;
@@ -79,9 +55,6 @@ async function getTweets(T) { // collects tweets and edits
       result = await T.get('statuses/user_timeline', params);
       freshBatch = result.data;
 
-      // BELOW: code to check array lenght and max ID
-      //console.log("Array Length: " + freshBatch.length + " | max_id: " + params.max_id);
-      // get oldest ID, and set params.max_id
       if (freshBatch.length === 0 || freshBatch.length - 1 === 0) {
         console.log("> Less than goal collection; Breaking.");
         break;
