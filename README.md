@@ -4,6 +4,24 @@
 
 ---
 
+## Overview
+
+**What it does:** This bot produces and tweets an algorithmically-generated (usually) readable sentence made up of phrases taken from a large collection of source tweets elsewhere on twitter. It tweets every 30 minutes, 24/7, and will not post pictures, reply, @-mention others, or use hashtags.
+
+**How does it work:**
+
+1. Every 30 minutes, the bot runs off of a cronjob and collects up to 1,000 tweets from each of the source twitter accounts, one by one.
+
+2. The entire tweet collection is then run through a Markov-chain algorithmic scheme to produce 10 new tweetable phrases.
+
+3. These 10 tweets are filtered to remove hashtags, @-mentions, and other twitter-style addendums.
+
+4. 1 of these 10 tweets is selected, and further filtered through a custom NSFW word filter that locates and replaces specific words and phrases with less crass alternatives.
+
+5. The now-sanitized tweet is then potentially altered with any number of 'fun' adjustments to further randomize the final product. (e.g. All caps, random tweet shortening)
+
+6. The final tweet is then tweeted by @BeeSquadBot on twitter, via *Twit* package and the Twitter API.
+
 #### Newest (significant) Updates
 
 ##### Jun 8, 2018
