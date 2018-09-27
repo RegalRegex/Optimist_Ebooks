@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "markov-strings": "^1.5.0",
-    "twit": "^2.2.9"
+    "twit": "^2.2.11"
   }
 }
