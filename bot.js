@@ -118,6 +118,7 @@ async function tweetIt(sourceTweets) {
 
           // Random functions to add a little fun/randomness to the bot
           function dropWordMath(min, max) {
+            emojiTime();
             varRandom = Math.floor(Math.random() * (max - min) + min);
             varRandom2 = Math.floor(Math.random() * (max - min) + min);
             regexTest = /(in|to|from|for|with|by|our|of|your|around|under|beyond)\s\w+$/;
@@ -130,12 +131,12 @@ async function tweetIt(sourceTweets) {
             if (varRandom2 <= 2 && varRandom2 >= 1) {
               shortNSweet();
             }
-            if (varRandom <= 10 && varRandom > 5 && varRandom != 5) {
-              beeTime();
-            }
-            if (varRandom <= 5 && varRandom >= 1 && varRandom != 5) {
-              knifeTime();
-            }
+            // if (varRandom <= 10 && varRandom > 5 && varRandom != 5) {
+            //   beeTime();
+            // }
+            // if (varRandom <= 5 && varRandom >= 1 && varRandom != 5) {
+            //   knifeTime();
+            // }
             if (varRandom === 5) {
               knifeTime();
               beeTime();
@@ -179,6 +180,13 @@ async function tweetIt(sourceTweets) {
 
           function knifeTime() {
             actualTweet = "🔪" + actualTweet;
+            return actualTweet;
+          }
+
+          function emojiTime() {
+            let random = Math.floor(Math.random() * (userAccounts.user.length - 1) + 1);
+            actualTweet = userAccounts.emoji[random] + ' ' + actualTweet;
+            console.log('%cEmoji Appended: '+userAccounts.emoji[random], 'color: blue; font-weight: bold;');
             return actualTweet;
           }
 
