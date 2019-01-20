@@ -137,10 +137,10 @@ async function tweetIt(sourceTweets) {
             // if (varRandom <= 5 && varRandom >= 1 && varRandom != 5) {
             //   knifeTime();
             // }
-            if (varRandom === 5) {
-              knifeTime();
-              beeTime();
-            }
+            // if (varRandom === 5) {
+            //   knifeTime();
+            //   beeTime();
+            // }
           }
 
           // Randomly drops last word of sentence
