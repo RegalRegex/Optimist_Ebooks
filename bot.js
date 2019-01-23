@@ -184,7 +184,7 @@ async function tweetIt(sourceTweets) {
           }
 
           function emojiTime() {
-            let random = Math.floor(Math.random() * (userAccounts.user.length) + 1);
+            let random = Math.floor(Math.random() * (userAccounts.emoji.length));
             actualTweet = userAccounts.emoji[random] + ' ' + actualTweet;
             console.log('%cEmoji Appended: ' + userAccounts.emoji[random], 'color: blue; font-weight: bold;');
             return actualTweet;
