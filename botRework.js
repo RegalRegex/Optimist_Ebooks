@@ -15,6 +15,10 @@ main();
 
 //Should I use  Promise.all for all the parts of this? I think so yeah
 function main() {
+  getTweets(T)
+  .then(tweetIt(result))
+
+
   var initializeGetTweets = getTweets(T);
   initializeGetTweets.then(tweetIt(results))
                      .then((results) => {
