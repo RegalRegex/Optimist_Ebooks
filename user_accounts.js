@@ -1,4 +1,5 @@
 module.exports = {
-user: ['SharpiBees', 'RegalReindeer', 'KaylaMod', 'KaylurMod', 'sylargenesis', 'CytoSprout', 'Luck_e_Duck', 'ehartworks', 'EThePaintDragon', 'OhNoItsWindy', 'ManticoreAss'],
-emoji: ['🐊', '🦌', '😎', '🍅', '🔪', '🌱', '🦆', '💜', '🐴', '🐉', '🤠']
+user: ['SharpiBees', 'hornyhoneyhell', 'RegalReindeer', 'regalfuckdeer' 'EThePaintDragon', 'FossaFussy', 'OhNoItsWindy', 'oohtitties', 'therestokube', 'TheAshpit',
+'saltyfauxhawk', 'Hornyfauxhawk'],
+emoji: ['🐝', '🍯', '🦐', '💦', '🐴', '😈', '⛈', '🍑', '👌', '🔥', '👀']
 }
