@@ -50,8 +50,9 @@ async function getTweets(T) { // collects tweets and edits
     let emoji = userAccounts.emoji[handle];
     params.screen_name = userAccounts.user[handle];
     params.max_id = undefined;
+    try {
     console.log(emoji + " Collecting tweets from \"" + userAccounts.user[handle] + "\" " + emoji);
-    while (counter < 1000) {
+    while (counter < 500) {
       result = await T.get('statuses/user_timeline', params);
       freshBatch = result.data;
 
@@ -74,6 +75,10 @@ async function getTweets(T) { // collects tweets and edits
       }
     }
     console.log(counter + " tweets gathered from account: " + userAccounts.user[handle]);
+    }
+    catch (e) {
+      console.log("Could not collect tweets from " + userAccounts.user[handle] + "!!!\nError = " + e);
+    }
   }
   return sourceTweets;
 }
