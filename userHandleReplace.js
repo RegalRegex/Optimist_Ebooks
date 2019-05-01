@@ -9,7 +9,7 @@ function handleReplace(tweetNew) {
 
         if (handleRegex.test(tweetNew) == true) {
             varRandom = Math.floor(Math.random() * (max - min) + 1)
-            tweetNew = tweetNew.replace(handleRegex, );
+            tweetNew = tweetNew.replace(handleRegex, replaceArray[varRandom]);
             console.log("UPDATED: " + tweetNew);
         }
     return tweetNew;
