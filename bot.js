@@ -5,6 +5,7 @@ var userAccounts = require('./user_accounts.js');
 const cleanUp = require('./tweetCleanup.js');
 const nsfwEdits = require('./nsfwFilterEdits.js');
 const Markov = require('markov-strings');
+const handleReplace = require('./userHandleReplace.js');
 
 var T = new twit(config);
 const data = [];
@@ -115,10 +116,12 @@ async function tweetIt(sourceTweets) {
           let regexTest;
           actualTweet = results.pop().string;
 
-          isSafe = nsfwEdits.isNsfw(actualTweet);
+          let isSafe = nsfwEdits.isNsfw(actualTweet);
           if (isSafe == false) {
             actualTweet = nsfwEdits.nsfwReplace(actualTweet);
           }
+          actualTweet = handleReplace.handleReplace(actualTweet);
+
           console.log(actualTweet);
 
           // Random functions to add a little fun/randomness to the bot
