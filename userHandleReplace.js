@@ -16,12 +16,19 @@ function handleReplace(tweetNew) {
 }
 
 replaceArray = [
-    'beep',
     '[REDACTED]',
     'a lonely snail',
-    'the entire state of nevada',
-    'wibble',
-    'me',
     'worm on a string',
-    'a single atom'
+    'a single atom',
+    'Sans Undertale',
+    'Shrek',
+    'Spinge',
+    'Donkey Kong',
+    'Godzilla',
+    'Gay Bowser',
+    'Dancing Cockroach',
+    'Terry from accounts receivable',
+    'Josh from accounting',
+    'My shadow-self',
+    'A handsome robot'
 ];
