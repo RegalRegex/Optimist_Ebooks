@@ -1,5 +1,5 @@
 module.exports = {
-    user: ['SharpiBees', 'hornyhoneyhell', 'RegalRegex', 'CumLizard', 'EThePaintDragon', 'FossaFussy', 'OhNoItsWindy', 'oohtitties', 'therestokube', 'TheAshpit',
-        'saltyfauxhawk', 'limesquares', 'limecircles', 'melisadraws', 'LynMyth', 'Myth_Keeper_'],
+    user: ['SharpiBees', 'hornhoney_', 'RegalRegex', 'CumLizard', 'tropicoastal', 'FossaBooty', 'spearxwind', 'oohtitties', 'caiffee', 'TheAshpit',
+        'saltyfauxhawk', 'limesquares', 'limecircles', 'silvaerial', 'LynMyth', 'Myth_Keeper_'],
     emoji: ['🐝', '🍯', '🦐', '💦', '🐴', '😈', '⛈', '🍑', '👌', '🔥', '👀', '🌱', '🦀', '🌑', '🐒', '😏']
 }
