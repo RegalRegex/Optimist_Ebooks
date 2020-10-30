@@ -30,5 +30,8 @@ replaceArray = [
     'Terry from accounts receivable',
     'Josh from accounting',
     'My shadow-self',
-    'A handsome robot'
+    'A handsome robot',
+    'Men',
+    'blaseball pitcher Jaylen Hotdogfingers',
+    'WOMEN'
 ];
