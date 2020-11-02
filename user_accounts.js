@@ -1,4 +1,4 @@
 module.exports = {
-    user: ['SharpiBees', 'RegalRegex', 'KaylaMod', 'KaylurMod', 'sylargenesis', 'CytoSprout', 'cerebroheart', 'tropicoastal', 'spearxwind', 'ManticoreAss', 'Azuiden', 'elektronxz', 'FurbyFarts'],
-    emoji: ['🐊', '🦌', '😎', '🍅', '🔪', '🌱', '💜', '🐴', '🐉', '🤠', '🦎', '🔫', '🐔']
+    user: ['SharpiBees', 'RegalRegex', 'KaylaMod', 'KaylaMustDie', 'UnholyLykoi', 'CytoSprout', 'cerebroheart', 'tropicoastal', 'ManticoreAss', 'Azuiden', 'elektronxz', 'FurbyFarts'],
+    emoji: ['🐊', '🦌', '😎', '🍅', '🔪', '🌱', '💜', '🐴', '🤠', '🦎', '🔫', '🐔']
 }
